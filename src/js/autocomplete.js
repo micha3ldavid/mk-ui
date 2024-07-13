@@ -599,12 +599,21 @@
 			})
 			.on('blur.mk', function (e) {
 
+				// IE bug with preventDefault being ignored by mousedown
+				// when an overflow element's scrollbar is being clicked.
+				if (thiss.fromIEBubbleBug) {
+					thiss.fromIEBubbleBug = false;
+					thiss.input.focus();
+					return;
+				}
+
 				trigger.removeClass('focus');
 				thiss.hide();
 
 				if (this.disabled) {
 					return;
 				}
+
 				thiss.blur();
 			})
 			.on('keydown.mk', function (e) {
@@ -964,7 +973,7 @@
 		*/
 
 		flatten: function (value) {
-			return value && btoa(JSON.stringify(value)) || '';
+			return escape(value && JSON.stringify(value) || '');
 		},
 
 		/*
@@ -979,7 +988,7 @@
 		*/
 
 		unflatten: function (value) {
-			return value && JSON.parse(atob(value)) || {};
+			return value && JSON.parse(unescape(value)) || {};
 		},
 
 		/*
